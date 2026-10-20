@@ -60,3 +60,14 @@ dialog input[type=text],dialog textarea{font:inherit;font-size:17px;width:100%;b
 .modo-btn{flex:1 1 0;min-width:0;font:inherit;font-size:14px;font-weight:bold;padding:10px 4px;border-radius:20px;border:3px solid var(--cor);background:#fff;color:var(--cor);cursor:pointer}
 .modo-btn[aria-pressed="true"]{background:var(--cor);color:#fff}
 #c-excluir{border-color:#d32f2f;color:#d32f2f}
+
+/* --- BARRA COM 4 BOTÕES E MODO ORGANIZAR --- */
+.barra{flex-wrap:wrap;max-width:420px;gap:10px}
+.barra .acao{flex:1 1 calc(50% - 5px)}
+.item-box.oculto{opacity:.4}
+div.item-box{cursor:default}
+div.item-box:active{transform:none;border-color:#fff!important}
+.ctrl{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:6px}
+.ctrl button{width:42px;height:42px;border-radius:50%;border:none;background:#ffc107;font-size:18px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.ctrl button:disabled{opacity:.35;cursor:default}
+.item-box{box-sizing:border-box}

@@ -31,6 +31,8 @@
     <div class="barra">
       <button type="button" id="voltar" class="acao">Trocar aluno</button>
       <button type="button" id="editar" class="acao" aria-pressed="false">Editar fotos</button>
+      <button type="button" id="add-card" class="acao">Adicionar card</button>
+      <button type="button" id="organizar" class="acao" aria-pressed="false">Organizar</button>
     </div>
     <p id="aviso" class="texto" hidden>Toque em um quadrado para trocar a foto.</p>
     <div id="grade" class="grade"></div>
@@ -54,10 +56,11 @@
   <p class="dica">Áudio do card</p>
   <div class="modos">
     <button type="button" class="modo-btn" data-modo="nenhum">Sem áudio</button>
-    <button type="button" class="modo-btn" data-modo="gravado">Gravar voz</button>
+    <button type="button" class="modo-btn" data-modo="gravado">Áudio</button>
     <button type="button" class="modo-btn" data-modo="texto">Texto</button>
   </div>
   <div id="sec-gravar" hidden>
+    <label class="acao">Escolher arquivo de áudio<input type="file" id="c-arq" accept="audio/*" hidden></label>
     <button type="button" id="btn-gravar" class="acao">● Gravar</button>
     <button type="button" id="btn-ouvir" class="acao" hidden>▶ Ouvir gravação</button>
   </div>
