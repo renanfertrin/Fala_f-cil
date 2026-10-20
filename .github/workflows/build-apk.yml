@@ -33,14 +33,25 @@ jobs:
       - name: Criar projeto Android
         run: npx cap add android
 
-      - name: Permissão da câmera e ícone do ursinho
+      - name: Permissões (câmera e microfone) e ícone do ursinho
         run: |
-          sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <application#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <application#' android/app/src/main/AndroidManifest.xml
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           cp -r icones-android/* android/app/src/main/res/
 
       - name: Sincronizar
         run: npx cap sync android
+
+      - name: Assinatura fixa do app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            mkdir -p ~/.android
+            echo "$KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
+          else
+            echo "Sem chave fixa: o APK sai com assinatura nova."
+          fi
 
       - name: Gerar APK
         working-directory: android
