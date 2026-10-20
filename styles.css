@@ -27,3 +27,18 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 dialog h2{margin:0 0 16px;color:var(--cor)}
 dialog .acao{background-color:#fff;display:block;margin:0 0 10px;width:100%;box-sizing:border-box;border-color:var(--cor);color:var(--cor)}
 @media (min-width:768px){.item-box{width:23%;height:200px}.label{font-size:16px}}
+
+/* --- AJUSTES DE ALINHAMENTO NO CELULAR --- */
+.header-title{text-align:center;font-size:clamp(1.3rem,6vw,2rem);gap:10px;padding:10px 16px;overflow-wrap:anywhere}
+.header-title::before,.header-title::after{width:clamp(30px,9vw,44px);height:clamp(30px,9vw,44px)}
+.barra{flex-wrap:nowrap;max-width:420px;margin-left:auto;margin-right:auto}
+.barra .acao{flex:1 1 0;min-width:0;padding:12px 8px;font-size:clamp(15px,4.4vw,18px)}
+.seletor{width:100%;max-width:320px}
+.seletor-btn{flex:1 1 0;min-width:0;padding:12px 8px}
+.novo .acao{width:100%;max-width:320px;box-sizing:border-box}
+.lista{flex-direction:column;align-items:center}
+.aluno{width:100%;max-width:320px;box-sizing:border-box;padding:16px 20px;overflow-wrap:anywhere}
+.perigo{background-color:rgba(0,0,0,.45);max-width:320px;width:100%;box-sizing:border-box}
+.texto{background:rgba(0,0,0,.4)}
+dialog{box-sizing:border-box;margin:auto;max-width:calc(100vw - 32px)}
+.novo .acao,.barra .acao[aria-pressed="false"]{background-color:rgba(0,0,0,.4)}
