@@ -30,7 +30,12 @@ function mostrar(lista){$('tela-alunos').hidden=!lista;$('tela-aluno').hidden=li
 function listar(){
   document.body.className='tema-menino';$('titulo').textContent='FalaFácil';
   const l=$('lista-alunos');l.innerHTML='';
-  alunos.forEach(a=>{const b=document.createElement('button');b.type='button';b.className='aluno tema-'+a.genero;b.textContent=a.nome;b.onclick=()=>abrir(a.id);l.append(b)});
+  alunos.forEach(a=>{
+    const linha=document.createElement('div');linha.className='linha';
+    const b=document.createElement('button');b.type='button';b.className='aluno tema-'+a.genero;b.textContent=a.nome;b.onclick=()=>abrir(a.id);
+    const x=document.createElement('button');x.type='button';x.className='lixo';x.textContent='🗑';x.setAttribute('aria-label','Excluir '+a.nome);x.onclick=()=>excluirAluno(a);
+    linha.append(b,x);l.append(linha);
+  });
   $('lista-alunos').hidden=!alunos.length;
   mostrar(true);
 }
@@ -72,11 +77,14 @@ $('criar').onclick=()=>{
 };
 $('voltar').onclick=()=>{try{localStorage.removeItem('ff-ultimo')}catch(e){}listar()};
 $('editar').onclick=()=>{edicao=!edicao;aplicarEdicao()};
-$('excluir').onclick=async()=>{
-  if(!confirm('Excluir '+atual.nome+' e as fotos dele(a) deste aparelho?'))return;
-  for(const it of ITENS)await idb('readwrite',s=>s.delete(chave(it[1])));
-  alunos=alunos.filter(a=>a!==atual);salvar();$('voltar').onclick();
-};
+async function excluirAluno(a){
+  if(!confirm('Excluir '+a.nome+' e as fotos dele(a) deste aparelho? Isso não pode ser desfeito.'))return;
+  for(const it of ITENS)await idb('readwrite',s=>s.delete(a.id+'/'+it[1]));
+  alunos=alunos.filter(x=>x.id!==a.id);salvar();
+  try{localStorage.removeItem('ff-ultimo')}catch(e){}
+  listar();
+}
+$('excluir').onclick=()=>excluirAluno(atual);
 ['f-cam','f-gal'].forEach(i=>$(i).onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const b=await reduzir(f);await idb('readwrite',s=>s.put(b,chave(item[1])));$('dlg').close();await desenhar()}

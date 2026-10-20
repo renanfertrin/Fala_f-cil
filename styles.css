@@ -42,3 +42,9 @@ dialog .acao{background-color:#fff;display:block;margin:0 0 10px;width:100%;box-
 .texto{background:rgba(0,0,0,.4)}
 dialog{box-sizing:border-box;margin:auto;max-width:calc(100vw - 32px)}
 .novo .acao,.barra .acao[aria-pressed="false"]{background-color:rgba(0,0,0,.4)}
+
+/* --- EXCLUIR ALUNO NA LISTA --- */
+.linha{display:flex;align-items:center;gap:8px;width:100%;max-width:320px}
+.linha .aluno{flex:1 1 0;min-width:0;width:auto}
+.lixo{flex:none;width:54px;height:54px;border-radius:50%;border:3px solid #fff;background-color:#fff;font-size:22px;cursor:pointer}
+.lixo:focus-visible{outline:4px solid #FFC107;outline-offset:2px}
