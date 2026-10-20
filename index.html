@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a3cff">
+<title>FalaFácil</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="tema-menino">
+<div class="app-container">
+  <div class="header-title" id="titulo">FalaFácil</div>
+
+  <section id="tela-alunos" class="tela">
+    <p class="texto">Quem vai usar o FalaFácil?</p>
+    <div id="lista-alunos" class="lista"></div>
+    <div class="novo">
+      <input id="nome" type="text" placeholder="Nome do aluno" maxlength="30" autocomplete="off">
+      <div class="seletor" role="group" aria-label="Menino ou menina">
+        <button type="button" class="seletor-btn" data-genero="menino" aria-pressed="true">Menino</button>
+        <button type="button" class="seletor-btn" data-genero="menina" aria-pressed="false">Menina</button>
+      </div>
+      <button type="button" id="criar" class="acao">Adicionar aluno</button>
+    </div>
+  </section>
+
+  <section id="tela-aluno" class="tela" hidden>
+    <div class="barra">
+      <button type="button" id="voltar" class="acao">Trocar aluno</button>
+      <button type="button" id="editar" class="acao" aria-pressed="false">Editar fotos</button>
+    </div>
+    <p id="aviso" class="texto" hidden>Toque em um quadrado para trocar a foto.</p>
+    <div id="grade" class="grade"></div>
+    <button type="button" id="excluir" class="acao perigo" hidden>Excluir aluno</button>
+  </section>
+</div>
+
+<dialog id="dlg">
+  <h2 id="dlg-titulo"></h2>
+  <label class="acao">Tirar foto<input type="file" id="f-cam" accept="image/*" capture="environment" hidden></label>
+  <label class="acao">Escolher da galeria<input type="file" id="f-gal" accept="image/*" hidden></label>
+  <button type="button" id="padrao" class="acao">Usar imagem padrão</button>
+  <button type="button" id="fechar" class="acao">Cancelar</button>
+</dialog>
+<script src="script.js"></script>
+</body>
+</html>
