@@ -45,6 +45,30 @@
   <button type="button" id="padrao" class="acao">Usar imagem padrão</button>
   <button type="button" id="fechar" class="acao">Cancelar</button>
 </dialog>
+<dialog id="dlg-card">
+  <h2 id="dc-titulo">Novo card</h2>
+  <input id="c-nome" type="text" placeholder="Nome (ex.: LANCHE)" maxlength="16" autocomplete="off">
+  <img id="c-prev" alt="Foto do card" hidden>
+  <label class="acao">Tirar foto<input type="file" id="c-cam" accept="image/*" capture="environment" hidden></label>
+  <label class="acao">Escolher da galeria<input type="file" id="c-gal" accept="image/*" hidden></label>
+  <p class="dica">Áudio do card</p>
+  <div class="modos">
+    <button type="button" class="modo-btn" data-modo="nenhum">Sem áudio</button>
+    <button type="button" class="modo-btn" data-modo="gravado">Gravar voz</button>
+    <button type="button" class="modo-btn" data-modo="texto">Texto</button>
+  </div>
+  <div id="sec-gravar" hidden>
+    <button type="button" id="btn-gravar" class="acao">● Gravar</button>
+    <button type="button" id="btn-ouvir" class="acao" hidden>▶ Ouvir gravação</button>
+  </div>
+  <div id="sec-texto" hidden>
+    <textarea id="c-texto" rows="3" maxlength="140" placeholder="Digite o que o aplicativo deve falar"></textarea>
+    <button type="button" id="btn-falar" class="acao">▶ Ouvir a voz</button>
+  </div>
+  <button type="button" id="c-salvar" class="acao">Salvar card</button>
+  <button type="button" id="c-excluir" class="acao" hidden>Excluir card</button>
+  <button type="button" id="c-fechar" class="acao">Cancelar</button>
+</dialog>
 <script src="script.js"></script>
 </body>
 </html>

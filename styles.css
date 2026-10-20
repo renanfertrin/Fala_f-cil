@@ -20,7 +20,7 @@ body{font-family:Arial,sans-serif;margin:0;padding:10px;background:var(--cor) va
 .item-box:active{transform:scale(.95);border-color:#FFC107!important}
 .item-box img{width:100%;height:100%;object-fit:cover}
 .label{position:absolute;bottom:0;width:100%;background:rgba(0,0,0,.7);color:#fff;text-align:center;padding:8px 0;font-size:13px;font-weight:bold;text-transform:uppercase}
-.edicao .item-box::after{content:"📷";position:absolute;top:6px;right:6px;background:#ffc107;border-radius:50%;width:34px;height:34px;line-height:34px;font-size:18px}
+.edicao .item-box:not(.novo-card)::after{content:"📷";position:absolute;top:6px;right:6px;background:#ffc107;border-radius:50%;width:34px;height:34px;line-height:34px;font-size:18px}
 .seletor-btn:focus-visible,.acao:focus-visible,.aluno:focus-visible,.item-box:focus-visible{outline:4px solid #FFC107;outline-offset:2px}
 dialog{border:none;border-radius:20px;padding:24px;width:min(90vw,360px);text-align:center}
 dialog::backdrop{background:rgba(0,0,0,.6)}
@@ -48,3 +48,15 @@ dialog{box-sizing:border-box;margin:auto;max-width:calc(100vw - 32px)}
 .linha .aluno{flex:1 1 0;min-width:0;width:auto}
 .lixo{flex:none;width:54px;height:54px;border-radius:50%;border:3px solid #fff;background-color:#fff;font-size:22px;cursor:pointer}
 .lixo:focus-visible{outline:4px solid #FFC107;outline-offset:2px}
+
+/* --- CARD PERSONALIZADO --- */
+.novo-card{background:rgba(255,255,255,.2)!important;border:4px dashed #fff!important;color:#fff;font-weight:bold;font-size:18px}
+.novo-card span{display:block;font-size:44px;line-height:1}
+dialog{max-height:90vh;overflow:auto}
+dialog input[type=text],dialog textarea{font:inherit;font-size:17px;width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:3px solid var(--cor);margin-bottom:10px}
+#c-prev{display:block;width:120px;height:120px;object-fit:cover;border-radius:16px;margin:0 auto 10px;border:3px solid var(--cor)}
+.dica{margin:6px 0;color:var(--cor);font-weight:bold}
+.modos{display:flex;gap:6px;margin-bottom:10px}
+.modo-btn{flex:1 1 0;min-width:0;font:inherit;font-size:14px;font-weight:bold;padding:10px 4px;border-radius:20px;border:3px solid var(--cor);background:#fff;color:var(--cor);cursor:pointer}
+.modo-btn[aria-pressed="true"]{background:var(--cor);color:#fff}
+#c-excluir{border-color:#d32f2f;color:#d32f2f}

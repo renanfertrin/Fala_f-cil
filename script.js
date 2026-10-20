@@ -20,6 +20,7 @@ const chave=img=>atual.id+'/'+img;
 function reduzir(file){return new Promise((ok,err)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const e=Math.min(1,600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*e;c.height=im.height*e;c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(ok,'image/jpeg',.8)};im.onerror=err;im.src=u})}
 
 function tocar(arq){
+  if('speechSynthesis' in window)speechSynthesis.cancel();
   if(audioAtual){audioAtual.pause();audioAtual.currentTime=0}
   audioAtual=new Audio('audio/'+arq);
   audioAtual.play().catch(()=>alert('Não foi possível tocar o áudio.'));
@@ -57,6 +58,17 @@ async function desenhar(){
     b.onclick=()=>{if(edicao){item=it;$('dlg-titulo').textContent='Foto de '+rot;$('dlg').showModal()}else tocar(audio)};
     g.append(b);
   }
+  for(const x of atual.extras||[]){
+    const foto=await idb('readonly',q=>q.get(chaveX(atual,x,'foto')));
+    const b=document.createElement('button');b.type='button';b.className='item-box';
+    const im=document.createElement('img');im.alt=x.rot;if(foto)im.src=URL.createObjectURL(foto);
+    const l=document.createElement('div');l.className='label';l.textContent=x.rot;
+    b.append(im,l);b.onclick=()=>edicao?abrirCard(x):tocarCard(x);g.append(b);
+  }
+  if(edicao){
+    const n=document.createElement('button');n.type='button';n.className='item-box novo-card';
+    n.innerHTML='<span>+</span>Novo card';n.onclick=()=>abrirCard(null);g.append(n);
+  }
 }
 
 async function abrir(id){
@@ -76,10 +88,11 @@ $('criar').onclick=()=>{
   alunos.push(a);salvar();$('nome').value='';abrir(a.id);
 };
 $('voltar').onclick=()=>{try{localStorage.removeItem('ff-ultimo')}catch(e){}listar()};
-$('editar').onclick=()=>{edicao=!edicao;aplicarEdicao()};
+$('editar').onclick=async()=>{edicao=!edicao;aplicarEdicao();await desenhar()};
 async function excluirAluno(a){
   if(!confirm('Excluir '+a.nome+' e as fotos dele(a) deste aparelho? Isso não pode ser desfeito.'))return;
   for(const it of ITENS)await idb('readwrite',s=>s.delete(a.id+'/'+it[1]));
+  for(const x of a.extras||[]){await idb('readwrite',s=>s.delete(chaveX(a,x,'foto')));await idb('readwrite',s=>s.delete(chaveX(a,x,'audio')))}
   alunos=alunos.filter(x=>x.id!==a.id);salvar();
   try{localStorage.removeItem('ff-ultimo')}catch(e){}
   listar();
@@ -92,6 +105,82 @@ $('excluir').onclick=()=>excluirAluno(atual);
 });
 $('padrao').onclick=async()=>{await idb('readwrite',s=>s.delete(chave(item[1])));$('dlg').close();await desenhar()};
 $('fechar').onclick=()=>$('dlg').close();
+
+// ---------- Cards personalizados (nome, foto e áudio criados pelo professor) ----------
+let cardEdit=null,fotoNova=null,audioNovo=null,modoAudio='nenhum',gravador=null,pedacos=[];
+const chaveX=(a,x,t)=>a.id+'/x'+x.id+'/'+t;
+
+function falar(t){
+  if(!('speechSynthesis' in window)){alert('Este aparelho não tem voz automática. Use a opção "Gravar voz".');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=.9;speechSynthesis.speak(u);
+}
+function tocarBlob(b){
+  if(audioAtual)audioAtual.pause();
+  audioAtual=new Audio(URL.createObjectURL(b));audioAtual.play().catch(()=>alert('Não foi possível tocar o áudio.'));
+}
+async function tocarCard(x){
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  if(audioAtual){audioAtual.pause();audioAtual.currentTime=0}
+  if(x.modo==='texto'&&x.texto)falar(x.texto);
+  else if(x.modo==='gravado'){const b=await idb('readonly',q=>q.get(chaveX(atual,x,'audio')));if(b)tocarBlob(b)}
+}
+function atualizarModo(){
+  document.querySelectorAll('.modo-btn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.modo===modoAudio));
+  $('sec-gravar').hidden=modoAudio!=='gravado';$('sec-texto').hidden=modoAudio!=='texto';
+  $('btn-ouvir').hidden=!(audioNovo||(cardEdit&&cardEdit.temAudio));
+  $('btn-gravar').textContent=$('btn-ouvir').hidden?'● Gravar':'● Gravar de novo';
+}
+async function abrirCard(x){
+  cardEdit=x;fotoNova=audioNovo=null;modoAudio=x?x.modo:'nenhum';
+  $('dc-titulo').textContent=x?'Editar card':'Novo card';
+  $('c-nome').value=x?x.rot:'';$('c-texto').value=x?x.texto||'':'';$('c-excluir').hidden=!x;
+  $('c-prev').hidden=!x;
+  if(x){const f=await idb('readonly',q=>q.get(chaveX(atual,x,'foto')));if(f)$('c-prev').src=URL.createObjectURL(f)}
+  atualizarModo();$('dlg-card').showModal();
+}
+document.querySelectorAll('.modo-btn').forEach(b=>b.onclick=()=>{modoAudio=b.dataset.modo;atualizarModo()});
+['c-cam','c-gal'].forEach(i=>$(i).onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{fotoNova=await reduzir(f);$('c-prev').src=URL.createObjectURL(fotoNova);$('c-prev').hidden=false}
+  catch(x){alert('Não foi possível usar essa imagem.')}
+});
+$('btn-gravar').onclick=async()=>{
+  if(gravador&&gravador.state==='recording'){gravador.stop();return}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    pedacos=[];gravador=new MediaRecorder(st);
+    gravador.ondataavailable=e=>pedacos.push(e.data);
+    gravador.onstop=()=>{st.getTracks().forEach(t=>t.stop());audioNovo=new Blob(pedacos,{type:gravador.mimeType||'audio/webm'});atualizarModo()};
+    gravador.start();$('btn-gravar').textContent='■ Parar gravação';
+  }catch(e){alert('Não foi possível usar o microfone. Verifique a permissão do aplicativo.')}
+};
+$('btn-ouvir').onclick=async()=>{
+  const b=audioNovo||await idb('readonly',q=>q.get(chaveX(atual,cardEdit,'audio')));if(b)tocarBlob(b);
+};
+$('btn-falar').onclick=()=>{const t=$('c-texto').value.trim();if(t)falar(t)};
+$('c-fechar').onclick=()=>{if(gravador&&gravador.state==='recording')gravador.stop();$('dlg-card').close()};
+$('c-salvar').onclick=async()=>{
+  const nome=$('c-nome').value.trim(),texto=$('c-texto').value.trim();
+  if(!nome){$('c-nome').focus();return}
+  if(!cardEdit&&!fotoNova){alert('Escolha uma foto para o card.');return}
+  if(modoAudio==='texto'&&!texto){$('c-texto').focus();return}
+  if(modoAudio==='gravado'&&!audioNovo&&!(cardEdit&&cardEdit.temAudio)){alert('Grave um áudio ou escolha outra opção.');return}
+  const x=cardEdit||{id:Date.now().toString(36)};
+  x.rot=nome;x.modo=modoAudio;x.texto=modoAudio==='texto'?texto:'';
+  try{
+    if(fotoNova)await idb('readwrite',q=>q.put(fotoNova,chaveX(atual,x,'foto')));
+    if(modoAudio==='gravado'&&audioNovo){await idb('readwrite',q=>q.put(audioNovo,chaveX(atual,x,'audio')));x.temAudio=true}
+    if(modoAudio!=='gravado'&&x.temAudio){await idb('readwrite',q=>q.delete(chaveX(atual,x,'audio')));x.temAudio=false}
+  }catch(e){alert('Não foi possível salvar o card.');return}
+  atual.extras=atual.extras||[];if(!cardEdit)atual.extras.push(x);
+  salvar();$('dlg-card').close();await desenhar();
+};
+$('c-excluir').onclick=async()=>{
+  if(!confirm('Excluir o card "'+cardEdit.rot+'"?'))return;
+  await idb('readwrite',q=>q.delete(chaveX(atual,cardEdit,'foto')));await idb('readwrite',q=>q.delete(chaveX(atual,cardEdit,'audio')));
+  atual.extras=atual.extras.filter(e=>e!==cardEdit);salvar();$('dlg-card').close();await desenhar();
+};
 
 listar();
 let ultimo=null;try{ultimo=localStorage.getItem('ff-ultimo')}catch(e){}
