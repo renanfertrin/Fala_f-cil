@@ -24,7 +24,7 @@ jobs:
       - name: Separar os arquivos do app
         run: |
           mkdir www
-          cp index.html styles.css script.js sw.js manifest.webmanifest icone-urso-*.png fundo-*.svg urso.svg www/
+          cp index.html styles.css script.js versao.js sw.js manifest.webmanifest icone-urso-*.png fundo-*.svg urso.svg www/
           cp -r audio imagens www/
 
       - name: Instalar Capacitor
@@ -38,6 +38,12 @@ jobs:
           sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <queries><intent><action android:name="android.intent.action.TTS_SERVICE" /></intent></queries>\n    <application#' android/app/src/main/AndroidManifest.xml
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           cp -r icones-android/* android/app/src/main/res/
+
+      - name: Numero da versao do app
+        run: |
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+          echo "window.FF_VERSAO=\"1.${{ github.run_number }}\";" > www/versao.js
+          grep -n "versionCode\|versionName" android/app/build.gradle
 
       - name: Sincronizar
         run: npx cap sync android
