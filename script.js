@@ -37,7 +37,7 @@ function listar(){
     const x=document.createElement('button');x.type='button';x.className='lixo';x.textContent='🗑';x.setAttribute('aria-label','Excluir '+a.nome);x.onclick=()=>excluirAluno(a);
     linha.append(b,x);l.append(linha);
   });
-  $('lista-alunos').hidden=!alunos.length;
+  $('lista-alunos').hidden=!alunos.length;$('tela-alunos').classList.toggle('vazio',!alunos.length);
   mostrar(true);
 }
 
@@ -198,6 +198,19 @@ $('c-excluir').onclick=async()=>{
   await idb('readwrite',q=>q.delete(chaveX(atual,cardEdit,'foto')));await idb('readwrite',q=>q.delete(chaveX(atual,cardEdit,'audio')));
   atual.extras=atual.extras.filter(e=>e!==cardEdit);salvar();$('dlg-card').close();await desenhar();
 };
+
+// Modo professor: segurar o título por 3 segundos mostra/esconde os botões de gerenciar
+let tmrProf=null,tmrToast=null;
+function aviso(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(tmrToast);tmrToast=setTimeout(()=>e.hidden=true,2200)}
+function alternarProfessor(){
+  const on=document.documentElement.classList.toggle('professor');
+  if(!on){edicao=organizar=false;if(atual&&!$('tela-aluno').hidden){aplicarEdicao();desenhar()}}
+  aviso('Modo professor '+(on?'ligado':'desligado'));
+}
+$('titulo').addEventListener('pointerdown',()=>{tmrProf=setTimeout(alternarProfessor,3000)});
+['pointerup','pointerleave','pointercancel'].forEach(e=>$('titulo').addEventListener(e,()=>clearTimeout(tmrProf)));
+$('titulo').addEventListener('contextmenu',e=>e.preventDefault());
+$('versao').textContent='Versão '+(window.FF_VERSAO||'web');
 
 listar();
 let ultimo=null;try{ultimo=localStorage.getItem('ff-ultimo')}catch(e){}
