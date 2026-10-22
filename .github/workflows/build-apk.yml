@@ -64,8 +64,10 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Renomear APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk FalaFacil.apk
+      - name: Assinar o APK com a chave fixa
+        run: |
+          AS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)apksigner
+          $AS sign --ks ~/.android/debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey --key-pass pass:android --out FalaFacil.apk android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Mostrar assinatura do APK
         run: |
