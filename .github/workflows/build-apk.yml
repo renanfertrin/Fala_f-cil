@@ -56,7 +56,8 @@ jobs:
             mkdir -p ~/.android
             echo "$KEYSTORE_BASE64" | base64 -d > ~/.android/debug.keystore
           else
-            echo "Sem chave fixa: o APK sai com assinatura nova."
+            echo "ERRO: o segredo KEYSTORE_BASE64 nao existe ou esta vazio. Crie-o em Settings > Secrets and variables > Actions."
+            exit 1
           fi
 
       - name: Gerar APK
@@ -65,6 +66,11 @@ jobs:
 
       - name: Renomear APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk FalaFacil.apk
+
+      - name: Mostrar assinatura do APK
+        run: |
+          AS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)apksigner
+          $AS verify --print-certs FalaFacil.apk | grep -i "SHA-256"
 
       - name: Publicar em Releases
         uses: softprops/action-gh-release@v2
