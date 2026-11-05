@@ -39,6 +39,45 @@ jobs:
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           cp -r icones-android/* android/app/src/main/res/
 
+      - name: Imprimir no Android (ponte de impressão)
+        run: |
+          mkdir -p android/app/src/main/java/br/com/falafacil/app
+          cat > android/app/src/main/java/br/com/falafacil/app/MainActivity.java <<'JAVA'
+          package br.com.falafacil.app;
+
+          import android.content.Context;
+          import android.os.Bundle;
+          import android.print.PrintAttributes;
+          import android.print.PrintDocumentAdapter;
+          import android.print.PrintManager;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.WebView;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              public class PrintBridge {
+                  @JavascriptInterface
+                  public void print() {
+                      runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              WebView wv = getBridge().getWebView();
+                              PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                              PrintDocumentAdapter adapter = wv.createPrintDocumentAdapter("FalaFacil");
+                              pm.print("FalaFacil", adapter, new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());
+                          }
+                      });
+                  }
+              }
+
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  getBridge().getWebView().addJavascriptInterface(new PrintBridge(), "AndroidPrint");
+              }
+          }
+          JAVA
+
       - name: Numero da versao do app
         run: |
           sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
