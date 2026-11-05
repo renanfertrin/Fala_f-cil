@@ -25,6 +25,11 @@
       </div>
       <button type="button" id="criar" class="acao">Adicionar aluno</button>
     </div>
+    <div class="backup">
+      <p class="dica2">Backup dos alunos, fotos e áudios</p>
+      <button type="button" id="bk-salvar" class="acao">Salvar backup</button>
+      <label class="acao">Restaurar backup<input type="file" id="bk-arq" accept=".json,application/json" hidden></label>
+    </div>
   </section>
 
   <section id="tela-aluno" class="tela" hidden>
@@ -33,6 +38,7 @@
       <button type="button" id="editar" class="acao" aria-pressed="false">Editar fotos</button>
       <button type="button" id="add-card" class="acao">Adicionar card</button>
       <button type="button" id="organizar" class="acao" aria-pressed="false">Organizar</button>
+      <button type="button" id="imprimir" class="acao">Imprimir / baixar PDF</button>
     </div>
     <p id="aviso" class="texto" hidden>Toque em um quadrado para trocar a foto.</p>
     <div id="grade" class="grade"></div>
@@ -41,6 +47,7 @@
   <p id="versao" class="versao"></p>
   <div id="toast" class="toast" hidden></div>
 </div>
+<div id="folha" aria-hidden="true"></div>
 
 <dialog id="dlg">
   <h2 id="dlg-titulo"></h2>
@@ -48,6 +55,17 @@
   <label class="acao">Escolher da galeria<input type="file" id="f-gal" accept="image/*" hidden></label>
   <button type="button" id="padrao" class="acao">Usar imagem padrão</button>
   <button type="button" id="fechar" class="acao">Cancelar</button>
+</dialog>
+<dialog id="dlg-imp">
+  <h2>Imprimir cards</h2>
+  <p class="dica">Quadrados por folha A4</p>
+  <div class="modos">
+    <button type="button" class="col-btn" data-col="2">8 por folha (2×4)</button>
+    <button type="button" class="col-btn" data-col="3">12 por folha (3×4)</button>
+  </div>
+  <button type="button" id="imp-print" class="acao">Imprimir</button>
+  <button type="button" id="imp-pdf" class="acao">Baixar PDF</button>
+  <button type="button" id="imp-fechar" class="acao">Cancelar</button>
 </dialog>
 <dialog id="dlg-card">
   <h2 id="dc-titulo">Novo card</h2>
